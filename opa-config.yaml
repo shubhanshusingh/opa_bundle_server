@@ -7,4 +7,4 @@ bundles:
     resource: /bundles/tenantA/bundle.tar.gz
   tenantB:
     service: bundle-server
-    resource: /bundles/tenantB/bundle.tar.gz
+    resource: /bundles/tenantB/bundleB.tar.gz

@@ -7,14 +7,15 @@ This guide walks you through designing, structuring, deploying, and testing a mu
 ## Table of Contents
 
 1. [Overview](#overview)
-2. [Folder and Bundle Structure](#folder-and-bundle-structure)
-3. [Example Policy and Data Files](#example-policy-and-data-files)
-4. [Bundle Packaging & Serving](#bundle-packaging--serving)
-5. [OPA Server Configuration](#opa-server-configuration)
-6. [Testing Policies via API](#testing-policies-via-api)
-7. [FastAPI Bundle Server Example](#fastapi-bundle-server-example)
-8. [requirements.txt for Bundle Server](#requirementstxt-for-bundle-server)
-9. [References](#references)
+2. [Install OPA Server](#install-opa-server)
+3. [Folder and Bundle Structure](#folder-and-bundle-structure)
+4. [Example Policy and Data Files](#example-policy-and-data-files)
+5. [Bundle Packaging & Serving](#bundle-packaging--serving)
+6. [OPA Server Configuration](#opa-server-configuration)
+7. [Testing Policies via API](#testing-policies-via-api)
+8. [FastAPI Bundle Server Example](#fastapi-bundle-server-example)
+9. [requirements.txt for Bundle Server](#requirementstxt-for-bundle-server)
+10. [References](#references)
 
 ---
 
@@ -23,6 +24,37 @@ This guide walks you through designing, structuring, deploying, and testing a mu
 - Each tenant has a dedicated bundle containing their policies and data.
 - Policies can be split by type (RBAC, ABAC, ReBAC) and by module (e.g., per application).
 - OPA loads bundles regularly and evaluates policies via REST API.
+
+---
+
+## Install OPA Server
+
+### 1. Download OPA Binary
+
+You can install OPA by downloading the binary from the official releases:
+
+**Linux/macOS:**
+```bash
+curl -L -o opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64_static
+chmod +x opa
+sudo mv opa /usr/local/bin/
+```
+
+**Windows:**
+- Download the latest release from [OPA GitHub Releases](https://github.com/open-policy-agent/opa/releases)
+- Add the OPA executable to your `PATH`
+
+### 2. Verify Installation
+
+```bash
+opa version
+```
+You should see output like:
+```
+Version: 0.60.0
+Build Commit: ...
+Build Timestamp: ...
+```
 
 ---
 

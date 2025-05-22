@@ -11,6 +11,8 @@ This guide walks you through designing, structuring, deploying, and testing a mu
 3. [Install OPA Server](#install-opa-server)
 4. [Folder and Bundle Structure](#folder-and-bundle-structure)
 5. [Example Policy and Data Files](#example-policy-and-data-files)
+    - [Examples for tenantA](#examples-for-tenanta)
+    - [Examples for tenantB](#examples-for-tenantb)
 6. [Bundle Packaging & Serving](#bundle-packaging--serving)
 7. [OPA Server Configuration](#opa-server-configuration)
 8. [Testing Policies via API](#testing-policies-via-api)
@@ -88,6 +90,7 @@ bundles/
     policies/
       rbac_main.rego
       abac_sales.rego
+      rebac_invoice.rego
     data.json
     manifest.json
 ```
@@ -100,7 +103,9 @@ bundles/
 
 ## Example Policy and Data Files
 
-### RBAC Example (`bundles/tenantA/policies/rbac_app1.rego`)
+### Examples for tenantA
+
+#### RBAC Example (`bundles/tenantA/policies/rbac_app1.rego`)
 ```rego
 package tenants.tenantA.rbac.app1
 
@@ -113,7 +118,7 @@ allow if {
 }
 ```
 
-### ABAC Example (`bundles/tenantA/policies/abac_finance.rego`)
+#### ABAC Example (`bundles/tenantA/policies/abac_finance.rego`)
 ```rego
 package tenants.tenantA.abac.finance
 
@@ -126,7 +131,7 @@ allow if {
 }
 ```
 
-### ReBAC Example (`bundles/tenantA/policies/rebac_project.rego`)
+#### ReBAC Example (`bundles/tenantA/policies/rebac_project.rego`)
 ```rego
 package tenants.tenantA.rebac.project
 
@@ -138,7 +143,7 @@ allow if {
 }
 ```
 
-### Data Example (`bundles/tenantA/data.json`)
+#### Data Example (`bundles/tenantA/data.json`)
 ```json
 {
   "tenants": {
@@ -156,7 +161,75 @@ allow if {
 }
 ```
 
-### Manifest Example (`bundles/tenantA/manifest.json`)
+#### Manifest Example (`bundles/tenantA/manifest.json`)
+```json
+{
+  "revision": "2025-05-22-1",
+  "roots": ["policies", "users", "relationships"]
+}
+```
+
+---
+
+### Examples for tenantB
+
+#### RBAC Example (`bundles/tenantB/policies/rbac_main.rego`)
+```rego
+package tenants.tenantB.rbac.main
+
+default allow := false
+
+allow if {
+    input.user == "charlie"
+    input.action == "approve"
+    input.resource == "expense"
+}
+```
+
+#### ABAC Example (`bundles/tenantB/policies/abac_sales.rego`)
+```rego
+package tenants.tenantB.abac.sales
+
+default allow := false
+
+allow if {
+    input.user.region == input.resource.region
+    input.action == "view"
+    input.resource.department == "sales"
+}
+```
+
+#### ReBAC Example (`bundles/tenantB/policies/rebac_invoice.rego`)
+```rego
+package tenants.tenantB.rebac.invoice
+
+default allow := false
+
+allow if {
+    data.tenants.tenantB.relationships[input.user][input.resource] == "editor"
+    input.action == "update"
+}
+```
+
+#### Data Example (`bundles/tenantB/data.json`)
+```json
+{
+  "tenants": {
+    "tenantB": {
+      "relationships": {
+        "charlie": { "invoice-456": "editor" },
+        "dana": { "invoice-456": "viewer" }
+      }
+    }
+  },
+  "users": {
+    "charlie": { "region": "us-west", "department": "sales" },
+    "dana": { "region": "eu-central", "department": "sales" }
+  }
+}
+```
+
+#### Manifest Example (`bundles/tenantB/manifest.json`)
 ```json
 {
   "revision": "2025-05-22-1",
@@ -224,7 +297,9 @@ For more, see [OPA Configuration Reference](https://www.openpolicyagent.org/docs
 
 **Examples:**
 
-### RBAC
+### tenantA
+
+#### RBAC
 ```bash
 curl -X POST "http://localhost:8181/v1/data/tenants/tenantA/rbac/app1/allow" \
   -H "Content-Type: application/json" \
@@ -232,7 +307,7 @@ curl -X POST "http://localhost:8181/v1/data/tenants/tenantA/rbac/app1/allow" \
 ```
 **Expected:** `{"result": true}`
 
-### ABAC
+#### ABAC
 ```bash
 curl -X POST "http://localhost:8181/v1/data/tenants/tenantA/abac/finance/allow" \
   -H "Content-Type: application/json" \
@@ -240,11 +315,39 @@ curl -X POST "http://localhost:8181/v1/data/tenants/tenantA/abac/finance/allow" 
 ```
 **Expected:** `{"result": true}`
 
-### ReBAC
+#### ReBAC
 ```bash
 curl -X POST "http://localhost:8181/v1/data/tenants/tenantA/rebac/project/allow" \
   -H "Content-Type: application/json" \
   -d '{"input": {"user": "alice", "action": "delete", "resource": "project-123"}}'
+```
+**Expected:** `{"result": true}`
+
+---
+
+### tenantB
+
+#### RBAC
+```bash
+curl -X POST "http://localhost:8181/v1/data/tenants/tenantB/rbac/main/allow" \
+  -H "Content-Type: application/json" \
+  -d '{"input": {"user": "charlie", "action": "approve", "resource": "expense"}}'
+```
+**Expected:** `{"result": true}`
+
+#### ABAC
+```bash
+curl -X POST "http://localhost:8181/v1/data/tenants/tenantB/abac/sales/allow" \
+  -H "Content-Type: application/json" \
+  -d '{"input": {"user": {"region": "us-west"}, "action": "view", "resource": {"department": "sales", "region": "us-west"}}}'
+```
+**Expected:** `{"result": true}`
+
+#### ReBAC
+```bash
+curl -X POST "http://localhost:8181/v1/data/tenants/tenantB/rebac/invoice/allow" \
+  -H "Content-Type: application/json" \
+  -d '{"input": {"user": "charlie", "action": "update", "resource": "invoice-456"}}'
 ```
 **Expected:** `{"result": true}`
 

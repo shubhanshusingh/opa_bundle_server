@@ -1,0 +1,7 @@
+services:
+  bundle-server:
+    url: http://your-server:8000
+bundles:
+  tenantA:
+    service: bundle-server
+    resource: /bundles/tenantA/bundle.tar.gz

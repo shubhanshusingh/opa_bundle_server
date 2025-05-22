@@ -1,0 +1,4 @@
+{
+  "revision": "2025-05-22-1",
+  "roots": ["policies", "users", "relationships"]
+}

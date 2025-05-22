@@ -1,0 +1,14 @@
+{
+  "tenants": {
+    "tenantB": {
+      "relationships": {
+        "charlie": { "invoice-456": "editor" },
+        "dana": { "invoice-456": "viewer" }
+      }
+    }
+  },
+  "users": {
+    "charlie": { "region": "us-west", "department": "sales" },
+    "dana": { "region": "eu-central", "department": "sales" }
+  }
+}

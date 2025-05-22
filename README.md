@@ -6,16 +6,31 @@ This guide walks you through designing, structuring, deploying, and testing a mu
 
 ## Table of Contents
 
-1. [Overview](#overview)
-2. [Install OPA Server](#install-opa-server)
-3. [Folder and Bundle Structure](#folder-and-bundle-structure)
-4. [Example Policy and Data Files](#example-policy-and-data-files)
-5. [Bundle Packaging & Serving](#bundle-packaging--serving)
-6. [OPA Server Configuration](#opa-server-configuration)
-7. [Testing Policies via API](#testing-policies-via-api)
-8. [FastAPI Bundle Server Example](#fastapi-bundle-server-example)
-9. [requirements.txt for Bundle Server](#requirementstxt-for-bundle-server)
-10. [References](#references)
+1. [What is OPA?](#what-is-opa)
+2. [Overview](#overview)
+3. [Install OPA Server](#install-opa-server)
+4. [Folder and Bundle Structure](#folder-and-bundle-structure)
+5. [Example Policy and Data Files](#example-policy-and-data-files)
+6. [Bundle Packaging & Serving](#bundle-packaging--serving)
+7. [OPA Server Configuration](#opa-server-configuration)
+8. [Testing Policies via API](#testing-policies-via-api)
+9. [FastAPI Bundle Server Example](#fastapi-bundle-server-example)
+10. [requirements.txt for Bundle Server](#requirementstxt-for-bundle-server)
+11. [References](#references)
+
+---
+
+## What is OPA?
+
+**Open Policy Agent (OPA)** is an open source, general-purpose policy engine that enables unified, context-aware policy enforcement across the stack. OPA decouples policy decision-making from policy enforcement, letting you write policies in a high-level declarative language (Rego) and query them over a REST API.  
+OPA is widely used for authorization (RBAC, ABAC, ReBAC), admission control, data filtering, and more in cloud-native environments (like Kubernetes, microservices, and APIs).
+
+- **Website:** [openpolicyagent.org](https://www.openpolicyagent.org/)
+- **Key Features:**
+  - Policy-as-code (Rego language)
+  - REST API for decision queries
+  - Supports bundles for policy/data distribution
+  - Integrates with Kubernetes, Envoy, microservices, gateways, and custom apps
 
 ---
 

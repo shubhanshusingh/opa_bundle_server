@@ -18,7 +18,9 @@ This guide walks you through designing, structuring, deploying, and testing a mu
 8. [Testing Policies via API](#testing-policies-via-api)
 9. [FastAPI Bundle Server Example](#fastapi-bundle-server-example)
 10. [requirements.txt for Bundle Server](#requirementstxt-for-bundle-server)
-11. [References](#references)
+11. [Manifest.json Usage](#manifestjson-usage)
+12. [Can Data Be Overridden via API?](#can-data-be-overridden-via-api)
+13. [References](#references)
 
 ---
 
@@ -403,6 +405,68 @@ pip install -r requirements.txt
 ```bash
 uvicorn bundle_server.main:app --reload --host 0.0.0.0 --port 8000
 ```
+
+---
+
+## Manifest.json Usage
+
+The **manifest.json** file in an OPA bundle serves several important purposes:
+
+- **Declares Bundle Roots:**  
+  The `"roots"` key specifies the top-level keys in the data namespace (e.g., `policies`, `users`, `relationships`) that OPA should load or overwrite from the bundle. Only data and policies under these roots are considered part of the bundle. If omitted, OPA treats the entire bundle as a single root.
+
+- **Versioning and Revision Tracking:**  
+  The `"revision"` key lets you specify a version or revision string for the bundle (e.g., a commit SHA, date, or semantic version). OPA uses this in status and diagnostics, so you can track which bundle version is loaded.
+
+- **Partial/Incremental Bundle Updates:**  
+  If you have multiple bundles or want to update only portions of your OPA data/policy tree, specifying roots in `manifest.json` helps OPA know what to replace when a bundle is downloaded.
+
+- **Required for Multi-bundle Setups:**  
+  If you use multiple bundles or layer them (e.g., global and tenant-specific), OPA requires a manifest with explicit roots to avoid conflicts and correctly merge data.
+
+**Example:**
+```json
+{
+  "revision": "2025-05-22-1",
+  "roots": ["policies", "users", "relationships"]
+}
+```
+
+- [OPA Bundles: Manifest](https://www.openpolicyagent.org/docs/latest/management/#the-bundle-manifest)
+- [OPA Bundles: Roots](https://www.openpolicyagent.org/docs/latest/management/#roots)
+
+---
+
+## Can Data Be Overridden via API?
+
+**Yes, data can be overridden via the OPA REST API,** but with important caveats:
+
+- **Manual Data Overriding:**  
+  OPA exposes endpoints to read and write data at runtime:
+  - `GET /v1/data/...` — Read data
+  - `PUT /v1/data/{path}` — Replace or create data
+  - `PATCH /v1/data/{path}` — Modify data
+  - `DELETE /v1/data/{path}` — Delete data
+
+  Example:
+  ```bash
+  curl -X PUT "http://localhost:8181/v1/data/tenants/tenantA/users" \
+    -H "Content-Type: application/json" \
+    -d '{"alice": {"department": "finance"}}'
+  ```
+  - This overrides the in-memory data for `tenants.tenantA.users`.
+  - The change is **not persisted** after OPA restarts unless re-applied.
+
+- **Bundles Take Precedence:**  
+  If you load data via bundles, every time a new bundle is downloaded, it will **overwrite** the corresponding data roots (as specified in `manifest.json`) with what's in the bundle.  
+  **Manual changes via the API will be lost** the next time the bundle is refreshed for that root.
+
+- **Best Practice:**  
+  - For dynamic, ephemeral, or test data: API writes are fine.
+  - For production, multi-tenant, or managed systems: **Provide data via bundles** and treat the API as read-only for data, unless you explicitly want to allow ephemeral overrides.
+
+- [OPA REST API: Data](https://www.openpolicyagent.org/docs/latest/rest-api/#data-api)
+- [OPA Bundles](https://www.openpolicyagent.org/docs/latest/management/#bundles)
 
 ---
 

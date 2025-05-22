@@ -1,5 +1,12 @@
 # OPA Multi-Tenant RBAC/ABAC/ReBAC Guide
 
+[![OPA Version](https://img.shields.io/badge/OPA-0.60.0-blue)](https://www.openpolicyagent.org/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100.0-blue)](https://fastapi.tiangolo.com/)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
+[![OPA Bundle](https://img.shields.io/badge/OPA%20Bundle-Supported-green)](https://www.openpolicyagent.org/docs/latest/management/#bundles)
+[![Multi-Tenant](https://img.shields.io/badge/Multi--Tenant-Supported-green)](https://www.openpolicyagent.org/)
+
 This guide walks you through designing, structuring, deploying, and testing a multi-tenant access control system using Open Policy Agent (OPA) with RBAC, ABAC, and ReBAC policies.
 
 ---

@@ -1,6 +1,6 @@
 services:
   bundle-server:
-    url: http://your-server:8000
+    url: http://localhost:8000
 bundles:
   tenantA:
     service: bundle-server

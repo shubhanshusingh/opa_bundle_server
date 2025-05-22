@@ -1,9 +1,9 @@
-package tenants["tenantA"].rbac.app1
+package tenants.tenantA.rbac.app1
 
-default allow = false
+default allow := false
 
-allow {
-  input.user == "alice"
-  input.action == "edit"
-  input.resource == "document"
+allow if {
+	input.user == "alice"
+	input.action == "edit"
+	input.resource == "document"
 }

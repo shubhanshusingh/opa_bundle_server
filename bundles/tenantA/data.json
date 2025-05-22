@@ -1,0 +1,10 @@
+{
+  "users": {
+    "alice": {"department": "finance"},
+    "bob": {"department": "engineering"}
+  },
+  "relationships": {
+    "alice": {"project-123": "owner"},
+    "bob": {"project-123": "member"}
+  }
+}
